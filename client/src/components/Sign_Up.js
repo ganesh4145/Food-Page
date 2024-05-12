@@ -1,169 +1,195 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+const Sign_Up = () => {
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [address, setAddress] = useState("");
+  const [currentCity, setCurrentCity] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [nameValidation, setNameValidation] = useState(true);
+  const [numberValidation, setNumberValidation] = useState(true);
+  const [emailValidation, setEmailValidation] = useState(true);
+  const [passwordValidation, setPasswordValidation] = useState(true);
+  const [response, setResponse] = useState("");
 
-// TODO remove, this demo shouldn't need to reset the theme.
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const request = {
+      name: name,
+      phoneNumber: phoneNumber,
+      email: email,
+      password: password,
+      address: address,
+      currentCity: currentCity,
+    };
+    console.log(request);
+    try {
+      await axios
+        .post("http://localhost:3500/userregister", request, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          setResponse(response.data);
+          console.log("error", response);
+        });
+    } catch (error) {
+      setResponse(error.response.data);
+      console.error("Error to send request", error);
+    }
+  };
 
-const defaultTheme = createTheme();
+  const namecheck = (name) => {
+    return (
+      /^[a-zA-Z]+[a-zA-Z ]*$/.test(name) &&
+      name.length >= 2 &&
+      name.length <= 20
+    );
+  };
 
-export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-      phoneNumber: data.get("phoneNumber"),
-      city: data.get("City"),
-    });
+  const numberLength = (number) => {
+    return number.length === 10;
+  };
+
+  const mailValidation = (mail) => {
+    return /^[a-zA-Z0-9._]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/.test(mail);
+  };
+
+  const passwordCheck = (password) => {
+    return /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$/.test(
+      password
+    );
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="phoneNumber"
-                  label="Phone Number"
-                  name="phoneNumber"
-                  autoComplete="phoneNumber"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type="confirmPassword"
-                  id="confirmPassword"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="city"
-                  label="City"
-                  type="city"
-                  id="city"
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
-    </ThemeProvider>
+    <div>
+      <h2>NEEM</h2>
+      <nav>
+        <Link to="/">
+          <button>Home</button>
+        </Link>
+        <Link to="/login">
+          <button>login</button>
+        </Link>
+      </nav>
+      <h1>Sign Up</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              setNameValidation(namecheck(e.target.value));
+            }}
+            required
+          />
+          {!nameValidation && (
+            <div>
+              <h3>Name should contain only letters and length must be 2-20</h3>
+            </div>
+          )}
+        </div>
+        <div>
+          <label>Phone Number</label>
+          <input
+            type="number"
+            value={phoneNumber}
+            onChange={(e) => {
+              setPhoneNumber(e.target.value);
+              setNumberValidation(numberLength(e.target.value));
+            }}
+            required
+          />
+          {!numberValidation && (
+            <div>
+              <h3>Number length should contain 10</h3>
+            </div>
+          )}
+        </div>
+        <div>
+          <label>Email</label>
+          <input
+            type="text"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailValidation(mailValidation(e.target.value));
+            }}
+            required
+          />
+          {!emailValidation && (
+            <div>
+              <h3>Please enter a valid email address</h3>
+            </div>
+          )}
+        </div>
+        <div>
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPasswordValidation(passwordCheck(e.target.value));
+            }}
+            required
+          />
+          <div>{!passwordValidation && <div>password wrong</div>}</div>
+        </div>
+        <div>
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <div>
+            {confirmPassword && confirmPassword !== password ? (
+              <div>
+                <h3>Password wrong</h3>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+        <div>
+          <div>
+            <label>Address</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => {
+                setAddress(e.target.value);
+              }}
+              required
+            />
+          </div>
+          <div>
+            <label>Current City</label>
+            <input
+              type="text"
+              value={currentCity}
+              onChange={(e) => {
+                setCurrentCity(e.target.value);
+              }}
+              required
+            />
+          </div>
+          <div>{response}</div>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   );
-}
+};
+
+export default Sign_Up;
