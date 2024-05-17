@@ -27,6 +27,10 @@ const userDetails = new mongoose.Schema({
     type: String,
     requires: true,
   },
+  type: {
+    type: String,
+    require: true,
+  },
 });
 
 module.exports = mongoose.model("userRegisterFoodPage", userDetails);

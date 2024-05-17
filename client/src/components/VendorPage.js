@@ -1,19 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const FoodPage = () => {
+const VendorPage = () => {
   const navigate = useNavigate();
   const logout = () => {
     console.log(localStorage.getItem("tok"));
-    localStorage.clear();
-    navigate("/");
+    window.localStorage.clear();
+    window.location.href = "./";
   };
   return (
     <div>
-      <h2>FoodPage</h2>
+      <div>VendorPage</div>
       <button onClick={logout}>LogOut</button>
     </div>
   );
 };
 
-export default FoodPage;
+export default VendorPage;

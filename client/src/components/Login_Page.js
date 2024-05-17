@@ -6,7 +6,6 @@ function Login_Page() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [response, setResponse] = useState("");
-  const [responseCode, setResponseCode] = useState("");
   const navigate = useNavigate();
 
   const logindetails = async (e) => {
@@ -21,8 +20,16 @@ function Login_Page() {
           "Content-Type": "application/json",
         },
       });
-      setResponse(response.data);
-      setResponseCode("200");
+      console.log(response);
+      localStorage.setItem("tok", response.data.token);
+      localStorage.setItem("LoggedIn", true);
+      localStorage.setItem("ty", response.data.userType);
+      setResponse(response.data.msg);
+      if (response.status === 200) {
+        navigate(
+          response.data.userType == "Buyer" ? "/foodpage" : "/vendorpage"
+        );
+      }
     } catch (error) {
       setResponse(error.response.data);
       console.log(error.response.data);
@@ -39,10 +46,6 @@ function Login_Page() {
 
         <Link to="/signup">
           <button>Sign Up</button>
-        </Link>
-
-        <Link to="/signupvendor">
-          <button>Sign up Vendor</button>
         </Link>
       </nav>
       <hr />
@@ -64,20 +67,16 @@ function Login_Page() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <div>
-          {response && responseCode == "200" ? navigate("/foodpage") : ""}
-        </div>
+        <div>{response}</div>
         <button type="submit">Login</button>
       </form>
-      <a href="www.google.com" target="_self">
-        Forgot Password
-      </a>
+      <Link to="/forgotpassword">
+        <a>Forgot Password</a>
+      </Link>
       <div>
         Did not have account?{" "}
         <Link to="/signup">
-          <a href="" target="_self">
-            Create Account
-          </a>
+          <a>Create Account</a>
         </Link>
       </div>
     </div>

@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const userRegisterFoodPage = require("./schema/user");
+const { v4: uuidv4 } = require("uuid");
 app.use(express.json());
 
 const whitelist = ["http://localhost:3000"];
@@ -38,7 +39,8 @@ async function connectDB() {
 connectDB();
 
 app.get("/", (req, res) => {
-  res.end("Hi welcome");
+  const userId = uuidv4();
+  res.end(`Hi welcome ${userId}`);
 });
 
 app.post("/userregister", async (req, res) => {
@@ -77,6 +79,7 @@ app.post("/userregister", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { phoneNumber, password } = req.body;
+  const userId = uuidv4();
   try {
     const user = await userRegisterFoodPage.findOne({
       phoneNumber: phoneNumber,
@@ -86,7 +89,11 @@ app.post("/login", async (req, res) => {
     }
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (isPasswordCorrect) {
-      return res.status(200).send("Login successful.");
+      return res.status(200).json({
+        Message: "Login successful.",
+        token: userId,
+        userType: user.type,
+      });
     } else {
       return res.status(401).send("Incorrect password.");
     }
@@ -96,13 +103,38 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/getuser", async (req, res) => {
+app.get("/gk", async (req, res) => {
+  try {
+    const viewUser = await userRegisterFoodPage.find();
+    res.status(200).send(viewUser);
+  } catch (error) {
+    res.status(500).send(error);
+    console.error("Error adding user:", error);
+  }
+});
+
+app.get("/gkd", async (req, res) => {
   try {
     const viewUser = await userRegisterFoodPage.deleteMany();
     res.status(200).send(viewUser);
   } catch (error) {
     res.status(500).send(error);
     console.error("Error adding user:", error);
+  }
+});
+
+app.put("/passwordupdate", async (req, res) => {
+  const { phoneNumber, password } = req.body;
+  console.log(req.body);
+  const updationPassword = await userRegisterFoodPage.findOneAndUpdate(
+    { phoneNumber: phoneNumber },
+    { $set: { password: password } }
+  );
+  res.status(200).send("password updated successfully");
+  try {
+  } catch (error) {
+    console.error("Error logging in:", error);
+    return res.status(500).send("Internal Server Error");
   }
 });
 

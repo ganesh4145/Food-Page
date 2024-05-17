@@ -5,16 +5,42 @@ import Sign_Up from "./components/Sign_Up";
 import Sign_up_Vendor from "./components/Sign_up_Vendor";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import FoodPage from "./components/FoodPage";
+import ForgotPassword from "./components/ForgotPassword";
+import VendorPage from "./components/VendorPage";
+import PrivateRouter from "./components/PrivateRouter";
+
 function App() {
+  const loginPrev = localStorage.getItem("LoggedIn");
+  const userType = localStorage.getItem("ty");
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              loginPrev === "true" ? (
+                userType === "Buyer" ? (
+                  <FoodPage />
+                ) : (
+                  <VendorPage />
+                )
+              ) : (
+                <Home />
+              )
+            }
+          />
           <Route path="/login" element={<Login_Page />} />
           <Route path="/signup" element={<Sign_Up />} />
-          <Route path="/signupvendor" element={<Sign_up_Vendor />} />
-          <Route path="/foodpage" element={<FoodPage />} />
+          <Route
+            path="/foodpage"
+            element={<PrivateRouter element={FoodPage} />}
+          />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route
+            path="/vendorpage"
+            element={<PrivateRouter element={VendorPage} />}
+          />
         </Routes>
       </div>
     </Router>

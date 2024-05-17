@@ -14,11 +14,6 @@ const Home = () => {
           <button>Sign up</button>
         </Link>
       </div>
-      <div>
-        <Link to="/signupvendor">
-          <button>Sign up Vendor</button>
-        </Link>
-      </div>
     </div>
   );
 };

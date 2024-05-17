@@ -14,6 +14,7 @@ const Sign_Up = () => {
   const [numberValidation, setNumberValidation] = useState(true);
   const [emailValidation, setEmailValidation] = useState(true);
   const [passwordValidation, setPasswordValidation] = useState(true);
+  const [userType, setuserType] = useState("");
   const [response, setResponse] = useState("");
 
   const handleSubmit = async (e) => {
@@ -25,6 +26,7 @@ const Sign_Up = () => {
       password: password,
       address: address,
       currentCity: currentCity,
+      type: userType,
     };
     console.log(request);
     try {
@@ -184,10 +186,54 @@ const Sign_Up = () => {
               required
             />
           </div>
+          <div>
+            <h2>Choose a user type :</h2>
+          </div>
+          <div>
+            <div>
+              <input
+                type="radio"
+                value={userType}
+                checked={userType === "Buyer"}
+                onChange={() => setuserType("Buyer")}
+              />
+
+              <label htmlFor="Buyer">Buyer</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                value={userType}
+                checked={userType === "Seller"}
+                onChange={() => setuserType("Seller")}
+              />
+
+              <label htmlFor="Seller">Seller</label>
+            </div>
+          </div>
           <div>{response}</div>
         </div>
-        <button type="submit">Submit</button>
+        <button
+          type="submit"
+          disabled={
+            !(
+              nameValidation &&
+              numberValidation &&
+              emailValidation &&
+              passwordValidation &&
+              userType
+            )
+          }
+        >
+          Submit
+        </button>
       </form>
+      <div>
+        Already have account{" "}
+        <Link to="/login">
+          <a>Login</a>
+        </Link>
+      </div>
     </div>
   );
 };
