@@ -38,15 +38,19 @@ function Login_Page() {
   return (
     <div>
       <nav>
-        <h3>NEEM</h3>
-
-        <Link to="/">
-          <button>Home</button>
-        </Link>
-
-        <Link to="/signup">
-          <button>Sign Up</button>
-        </Link>
+        
+        <ul className="nav justify-content-center">
+        <li className="nav-item">
+        <h3 className="float-left">NEEM</h3>
+  </li>
+  <li className="nav-item">
+    <a className="nav-link active" aria-current="page" href="/">Home</a>
+  </li>
+  <li className="nav-item">
+    <a className="nav-link" href="/signup">Sign Up</a>
+  </li>
+  
+</ul>
       </nav>
       <hr />
       <h2>Login Page</h2>
@@ -68,7 +72,7 @@ function Login_Page() {
           />
         </div>
         <div>{response}</div>
-        <button type="submit">Login</button>
+        <button type="submit" className="btn btn-success">Login</button>
       </form>
       <Link to="/forgotpassword">
         <a>Forgot Password</a>
