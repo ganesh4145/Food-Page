@@ -1,6 +1,58 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
+
+const RootContainer = styled(Container)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "100vh",
+  backgroundColor: "#f0f2f5",
+  backgroundImage: `url(https://img.freepik.com/premium-photo/raw-ingredients-cooking-spaghetti-marinara-with-poached-eggs-flat-lay-copy-spaces_63762-248.jpg)`,
+  backgroundSize: "cover",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center",
+}));
+
+const FormContainer = styled("form")(({ theme }) => ({
+  backgroundColor: "rgba(255, 255, 255, 0.8)", // Transparent background
+  padding: "20px",
+  borderRadius: "8px",
+  boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+  marginTop: theme.spacing(2),
+}));
+
+const NavContainer = styled(Toolbar)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+}));
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#4caf50",
+    },
+    secondary: {
+      main: "#ff5722",
+    },
+  },
+});
 
 const Sign_Up = () => {
   const [name, setName] = useState("");
@@ -69,22 +121,34 @@ const Sign_Up = () => {
   };
 
   return (
-    <div>
-      <h2>NEEM</h2>
-      <nav>
-        <Link to="/">
-          <button>Home</button>
-        </Link>
-        <Link to="/login">
-          <button>login</button>
-        </Link>
-      </nav>
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name</label>
-          <input
-            type="text"
+    <ThemeProvider theme={theme}>
+      <AppBar position="static">
+        <Container>
+          <NavContainer>
+            <Typography variant="h6" noWrap>
+              NEEM
+            </Typography>
+            <div>
+              <Button color="inherit" component={Link} to="/">
+                Home
+              </Button>
+              <Button color="inherit" component={Link} to="/login">
+                Login
+              </Button>
+            </div>
+          </NavContainer>
+        </Container>
+      </AppBar>
+      <RootContainer>
+        <Typography variant="h4" gutterBottom>
+          Sign Up
+        </Typography>
+        <FormContainer onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="Name"
+            variant="outlined"
+            margin="normal"
             value={name}
             onChange={(e) => {
               setName(e.target.value);
@@ -93,14 +157,15 @@ const Sign_Up = () => {
             required
           />
           {!nameValidation && (
-            <div>
-              <h3>Name should contain only letters and length must be 2-20</h3>
-            </div>
+            <Typography color="error">
+              Name should contain only letters and length must be 2-20
+            </Typography>
           )}
-        </div>
-        <div>
-          <label>Phone Number</label>
-          <input
+          <TextField
+            fullWidth
+            label="Phone Number"
+            variant="outlined"
+            margin="normal"
             type="number"
             value={phoneNumber}
             onChange={(e) => {
@@ -110,15 +175,15 @@ const Sign_Up = () => {
             required
           />
           {!numberValidation && (
-            <div>
-              <h3>Number length should contain 10</h3>
-            </div>
+            <Typography color="error">
+              Number length should contain 10
+            </Typography>
           )}
-        </div>
-        <div>
-          <label>Email</label>
-          <input
-            type="text"
+          <TextField
+            fullWidth
+            label="Email"
+            variant="outlined"
+            margin="normal"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -127,14 +192,15 @@ const Sign_Up = () => {
             required
           />
           {!emailValidation && (
-            <div>
-              <h3>Please enter a valid email address</h3>
-            </div>
+            <Typography color="error">
+              Please enter a valid email address
+            </Typography>
           )}
-        </div>
-        <div>
-          <label>Password</label>
-          <input
+          <TextField
+            fullWidth
+            label="Password"
+            variant="outlined"
+            margin="normal"
             type="password"
             value={password}
             onChange={(e) => {
@@ -143,98 +209,99 @@ const Sign_Up = () => {
             }}
             required
           />
-          <div>{!passwordValidation && <div>password wrong</div>}</div>
-        </div>
-        <div>
-          <label>Confirm Password</label>
-          <input
+          {!passwordValidation && (
+            <Typography color="error">
+              Password must be 8-20 characters long and include at least one
+              number and one special character.
+            </Typography>
+          )}
+          <TextField
+            fullWidth
+            label="Confirm Password"
+            variant="outlined"
+            margin="normal"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
-          <div>
-            {confirmPassword && confirmPassword !== password ? (
-              <div>
-                <h3>Password wrong</h3>
-              </div>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
-        <div>
-          <div>
-            <label>Address</label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => {
-                setAddress(e.target.value);
-              }}
-              required
-            />
-          </div>
-          <div>
-            <label>Current City</label>
-            <input
-              type="text"
-              value={currentCity}
-              onChange={(e) => {
-                setCurrentCity(e.target.value);
-              }}
-              required
-            />
-          </div>
-          <div>
-            <h2>Choose a user type :</h2>
-          </div>
-          <div>
-            <div>
-              <input
-                type="radio"
-                value={userType}
-                checked={userType === "Buyer"}
-                onChange={() => setuserType("Buyer")}
+          {confirmPassword && confirmPassword !== password && (
+            <Typography color="error">Passwords do not match</Typography>
+          )}
+          <TextField
+            fullWidth
+            label="Address"
+            variant="outlined"
+            margin="normal"
+            value={address}
+            onChange={(e) => {
+              setAddress(e.target.value);
+            }}
+            required
+          />
+          <TextField
+            fullWidth
+            label="Current City"
+            variant="outlined"
+            margin="normal"
+            value={currentCity}
+            onChange={(e) => {
+              setCurrentCity(e.target.value);
+            }}
+            required
+          />
+          <FormControl component="fieldset" margin="normal">
+            <FormLabel component="legend">Choose a user type</FormLabel>
+            <RadioGroup
+              row
+              value={userType}
+              onChange={(e) => setuserType(e.target.value)}
+            >
+              <FormControlLabel
+                value="Buyer"
+                control={<Radio />}
+                label="Buyer"
               />
-
-              <label htmlFor="Buyer">Buyer</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                value={userType}
-                checked={userType === "Seller"}
-                onChange={() => setuserType("Seller")}
+              <FormControlLabel
+                value="Seller"
+                control={<Radio />}
+                label="Seller"
               />
-
-              <label htmlFor="Seller">Seller</label>
-            </div>
-          </div>
-          <div>{response}</div>
-        </div>
-        <button
-          type="submit"
-          disabled={
-            !(
-              nameValidation &&
-              numberValidation &&
-              emailValidation &&
-              passwordValidation &&
-              userType
-            )
-          }
-        >
-          Submit
-        </button>
-      </form>
-      <div>
-        Already have account{" "}
-        <Link to="/login">
-          <a>Login</a>
-        </Link>
-      </div>
-    </div>
+            </RadioGroup>
+          </FormControl>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={
+              !(
+                nameValidation &&
+                numberValidation &&
+                emailValidation &&
+                passwordValidation &&
+                userType
+              )
+            }
+          >
+            Submit
+          </Button>
+          {response && (
+            <Typography color="error" margin="normal">
+              {response}
+            </Typography>
+          )}
+        </FormContainer>
+        <Box mt={2}>
+          <Typography style={{ color: "white" }}>
+            Already have an account?{" "}
+            <Link to="/login" style={{ color: "white" }}>
+              Login
+            </Link>
+          </Typography>
+        </Box>
+      </RootContainer>
+    </ThemeProvider>
   );
 };
 
