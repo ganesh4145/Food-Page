@@ -93,6 +93,7 @@ app.post("/login", async (req, res) => {
         Message: "Login successful.",
         token: userId,
         userType: user.type,
+        userName: user.name,
       });
     } else {
       return res.status(401).send("Incorrect password.");
