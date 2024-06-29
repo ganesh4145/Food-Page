@@ -1,16 +1,10 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const AddMenuItem = () => {
   const [items, setItems] = useState([
     { itemName: "", fromTime: "", toTime: "", quantity: "", price: "" },
   ]);
-
-  const addNewItem = () => {
-    setItems([
-      ...items,
-      { itemName: "", fromTime: "", toTime: "", quantity: "", price: "" },
-    ]);
-  };
 
   const handleChange = (index, field, value) => {
     const newItems = [...items];
@@ -18,23 +12,38 @@ const AddMenuItem = () => {
     setItems(newItems);
   };
 
-  const handleRemoveItem = (index) => {
+  const addField = () => {
+    setItems([
+      ...items,
+      { itemName: "", fromTime: "", toTime: "", quantity: "", price: "" },
+    ]);
+  };
+
+  const handleDelete = (index) => {
     const newItems = items.filter((_, i) => i !== index);
     setItems(newItems);
   };
 
-  const handleSubmit = (e) => {
+  const addItems = async (e) => {
     e.preventDefault();
-    const item = { name: localStorage.getItem("un"), items };
+    const hotelName = localStorage.getItem("un");
+    const item = { hotelName, hotelItems: items }; // Change here
     console.log("Items submitted:", item);
-    // You can send the items to the server here
+    await axios
+      .post("http://localhost:3500/hoteldetails", item, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => console.log(response))
+      .catch((err) => console.error(err));
   };
 
   return (
     <div>
       <div>AddMenuItem</div>
-      <h2>Add Menu</h2>
-      <form onSubmit={handleSubmit}>
+      <h2>addmenu</h2>
+      <form onSubmit={addItems}>
         {items.map((item, index) => (
           <div key={index}>
             <label>Item Name</label>
@@ -43,18 +52,23 @@ const AddMenuItem = () => {
               placeholder="Item Name"
               value={item.itemName}
               onChange={(e) => handleChange(index, "itemName", e.target.value)}
+              required
             />
             <label>From Time</label>
             <input
               type="time"
+              placeholder="From Time"
               value={item.fromTime}
               onChange={(e) => handleChange(index, "fromTime", e.target.value)}
+              required
             />
             <label>To Time</label>
             <input
               type="time"
+              placeholder="To Time"
               value={item.toTime}
               onChange={(e) => handleChange(index, "toTime", e.target.value)}
+              required
             />
             <label>Available Quantity</label>
             <input
@@ -62,22 +76,24 @@ const AddMenuItem = () => {
               placeholder="Quantity"
               value={item.quantity}
               onChange={(e) => handleChange(index, "quantity", e.target.value)}
+              required
             />
-            <label>Price</label>
+            <label>₹</label>
             <input
               type="number"
               placeholder="Price"
               value={item.price}
               onChange={(e) => handleChange(index, "price", e.target.value)}
+              required
             />
-            <button type="button" onClick={() => handleRemoveItem(index)}>
+            <button type="button" onClick={() => handleDelete(index)}>
               Delete
             </button>
           </div>
         ))}
         <input type="submit" value="Submit" />
       </form>
-      <button onClick={addNewItem}>Add New Item</button>
+      <button onClick={addField}>Add New Item</button>
     </div>
   );
 };

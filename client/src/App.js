@@ -9,6 +9,8 @@ import ForgotPassword from "./components/ForgotPassword";
 import VendorPage from "./components/VendorPage";
 import PrivateRouter from "./components/PrivateRouter";
 import AddMenuItem from "./components/vendor/AddMenuItem";
+import HotelItemPage from "./components/HotelItemPage";
+import CartPage from "./components/CartPage";
 
 function App() {
   const loginPrev = localStorage.getItem("LoggedIn");
@@ -36,14 +38,16 @@ function App() {
 
           <Route
             path="/foodpage"
-            element={<PrivateRouter element={FoodPage} />}
+            element={<PrivateRouter element={<FoodPage />} />}
           />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route
             path="/vendorpage"
-            element={<PrivateRouter element={VendorPage} />}
+            element={<PrivateRouter element={<VendorPage />} />}
           />
           <Route path="/addItemMenu" element={<AddMenuItem />} />
+          <Route path="/hotelList/:hotelId" element={<HotelItemPage />} />
+          <Route path="/cartItem" element={<CartPage />} />
         </Routes>
       </div>
     </Router>

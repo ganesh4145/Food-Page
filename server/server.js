@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const userRegisterFoodPage = require("./schema/user");
+const hotelDetailsSchema = require("./schema/schema");
 const { v4: uuidv4 } = require("uuid");
 app.use(express.json());
 
@@ -136,6 +137,73 @@ app.put("/passwordupdate", async (req, res) => {
   } catch (error) {
     console.error("Error logging in:", error);
     return res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/hoteldetails", async (req, res) => {
+  try {
+    const { hotelName, hotelItems } = req.body;
+    const hotel = await hotelDetailsSchema.findOne({ hotelName });
+    if (hotel) {
+      const existingItems = hotel.hotelItems.map((item) => item.itemName);
+      const duplicateItems = hotelItems.filter((item) =>
+        existingItems.includes(item.itemName)
+      );
+
+      if (duplicateItems.length > 0) {
+        return res
+          .status(500)
+          .send(
+            "Duplicate item names found: " +
+              duplicateItems.map((item) => item.itemName).join(", ")
+          );
+      }
+
+      hotel.hotelItems.push(...hotelItems);
+      await hotel.save();
+      return res.status(200).send("Items appended successfully");
+    } else {
+      const addHotelDetails = await hotelDetailsSchema.create(req.body);
+      console.log(addHotelDetails);
+      return res.status(201).send("details added successfully");
+    }
+  } catch (error) {
+    console.error("Error adding user:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/hotelList", async (req, res) => {
+  try {
+    const viewUser = await hotelDetailsSchema.find();
+    res.status(200).send(viewUser);
+  } catch (error) {
+    res.status(500).send(error);
+    console.error("Error adding user:", error);
+  }
+});
+
+app.get("/hdd", async (req, res) => {
+  try {
+    const viewUser = await hotelDetailsSchema.deleteMany();
+    res.status(200).send(viewUser);
+  } catch (error) {
+    res.status(500).send(error);
+    console.error("Error adding user:", error);
+  }
+});
+
+app.get("/hotelList/:id", async (req, res) => {
+  try {
+    const hotelId = req.params.id;
+    console.log(hotelId);
+    const menuItems = await hotelDetailsSchema.findById(hotelId);
+    //res.status(200).send(menuItems);
+
+    res.status(200).json(menuItems);
+  } catch (error) {
+    res.status(500).send(error);
+    console.error("Error adding user:", error);
   }
 });
 
