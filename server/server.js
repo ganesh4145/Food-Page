@@ -196,7 +196,6 @@ app.get("/hdd", async (req, res) => {
 app.get("/hotelList/:id", async (req, res) => {
   try {
     const hotelId = req.params.id;
-    console.log(hotelId);
     const menuItems = await hotelDetailsSchema.findById(hotelId);
     //res.status(200).send(menuItems);
 
