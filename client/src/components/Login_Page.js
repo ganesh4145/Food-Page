@@ -62,6 +62,7 @@ function Login_Page() {
       if (response.status === 200) {
         navigate(
           response.data.userType === "Buyer" ? "/foodpage" : "/vendorpage"
+          // response.data.userType === "Buyer" ? "/" : "/"
         );
       }
     } catch (error) {

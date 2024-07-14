@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Route, Routes } from "react-router-dom";
-import AddMenuItem from "./vendor/AddMenuItem";
+import { useNavigate } from "react-router-dom";
 
 const VendorPage = () => {
   const navigate = useNavigate();
@@ -20,18 +19,19 @@ const VendorPage = () => {
     navigate("/addItemMenu");
   };
 
+  const handleUpdateItem = () => {
+    navigate("/updateitem");
+  };
+
   return (
     <div>
       <div>VendorPage</div>
       <button onClick={logout}>LogOut</button>
       <h1>{userName}</h1>
 
-      <Routes>
-        <Route path="/addItemMenu" element={<AddMenuItem />} />
-      </Routes>
-
       <button onClick={handleAddMenuItem}>Add Menu Item</button>
-      <button>Update and Delete Menu Item</button>
+
+      <button onClick={handleUpdateItem}>Update and Delete Menu Item</button>
     </div>
   );
 };

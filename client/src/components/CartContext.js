@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import { createContext, React, useContext, useState } from "react";
 
 export const ItemContext = createContext(null);
 
@@ -6,28 +6,29 @@ export const CartContextProvider = (props) => {
   const [cartItems, setCartItems] = useState([]);
 
   const addToCart = (item) => {
-    setCartItems((prevItems) => {
-      const itemIndex = prevItems.findIndex((i) => i._id === item._id);
+    setCartItems((prevItem) => {
+      const itemIndex = prevItem.findIndex((i) => i._id === item._id);
+
       if (itemIndex !== -1) {
-        const newItems = [...prevItems];
-        newItems[itemIndex].quantity += 1;
-        return newItems;
+        const newItem = [...prevItem];
+        newItem[itemIndex].quantity += 1;
+        return newItem;
       }
-      return [...prevItems, { ...item, quantity: 1 }];
+      return [...prevItem, { ...item, quantity: 1 }];
     });
   };
 
-  const increaseCount = (itemId) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+  const increaseItem = (itemId) => {
+    setCartItems((prevItem) =>
+      prevItem.map((item) =>
         item._id === itemId ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  const decreaseCount = (itemId) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+  const decreaseItem = (itemId) => {
+    setCartItems((prevItem) =>
+      prevItem.map((item) =>
         item._id === itemId && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
@@ -36,17 +37,20 @@ export const CartContextProvider = (props) => {
   };
 
   const removeItem = (itemId) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item._id !== itemId)
-    );
+    setCartItems((prevItem) => prevItem.filter((item) => item._id !== itemId));
+  };
+
+  const displayItem = () => {
+    console.log(`cart Items, ${JSON.stringify(cartItems, null, 2)}`);
   };
 
   const contextValue = {
     addToCart,
     cartItems,
-    increaseCount,
-    decreaseCount,
+    increaseItem,
+    decreaseItem,
     removeItem,
+    displayItem,
   };
 
   return (

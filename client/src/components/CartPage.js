@@ -2,27 +2,31 @@ import React, { useContext } from "react";
 import { ItemContext } from "./CartContext";
 
 const CartPage = () => {
-  const { cartItems, increaseCount, decreaseCount, removeItem } =
+  const { cartItems, increaseItem, decreaseItem, removeItem, displayItem } =
     useContext(ItemContext);
 
+  const totalAmount = cartItems.reduce(
+    (total, item) => total + item.quantity * item.price,
+    0
+  );
   return (
     <div>
-      <h2>Cart</h2>
+      <h1>Cart</h1>
       {cartItems.length === 0 ? (
-        <p>Your cart is empty</p>
+        <h3>Cart is Empty</h3>
       ) : (
         cartItems.map((item) => (
           <div key={item._id}>
-            <p>
-              {item.itemName} - Quantity: {item.quantity} - Price:
-              {item.quantity * item.price}
-            </p>
-            <button onClick={() => increaseCount(item._id)}> + </button>
-            <button onClick={() => removeItem(item._id)}> Remove </button>
-            <button onClick={() => decreaseCount(item._id)}> - </button>
+            Item - {item.itemName} - Qunatity :{item.quantity} Price:{" "}
+            {item.price}
+            <button onClick={() => increaseItem(item._id)}>+</button>
+            <button onClick={() => removeItem(item._id)}>remove</button>
+            <button onClick={() => decreaseItem(item._id)}>-</button>
           </div>
         ))
       )}
+      <div>Total Amount:{totalAmount}</div>
+      <button onClick={() => displayItem()}>Display</button>
     </div>
   );
 };

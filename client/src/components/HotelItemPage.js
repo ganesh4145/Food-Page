@@ -6,7 +6,9 @@ import { ItemContext } from "./CartContext";
 const HotelItemPage = () => {
   const { hotelId } = useParams();
   const [hotel, setHotel] = useState(null);
-  const { addToCart, cartItems } = useContext(ItemContext);
+  const { addToCart } = useContext(ItemContext);
+  const date = new Date();
+  const showTime = date.getHours() + ":" + date.getMinutes();
 
   useEffect(() => {
     axios
@@ -30,9 +32,17 @@ const HotelItemPage = () => {
       <h2>{hotel.hotelName}</h2>
       {hotel.hotelItems.map((item) => (
         <div key={item._id}>
-          <button onClick={() => addToCart(item)}>
-            {`${item.itemName} ₹${item.price}`}
-          </button>
+          {(showTime <= item.fromTime && showTime >= item.toTime) ||
+          item.quantity > 2 ||
+          item.availability === true ? (
+            <button onClick={() => addToCart(item)}>
+              {item.itemName} ₹ {item.price}
+            </button>
+          ) : (
+            <p>
+              {item.itemName} ₹{item.price}
+            </p>
+          )}
         </div>
       ))}
     </div>

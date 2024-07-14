@@ -206,4 +206,64 @@ app.get("/hotelList/:id", async (req, res) => {
   }
 });
 
+app.get("/item/:name", async (req, res) => {
+  try {
+    const hotelName = req.params.name;
+    const items = await hotelDetailsSchema.findOne({ hotelName: hotelName });
+    res.status(200).json(items);
+  } catch (error) {
+    res.status(500).send(error);
+    console.error("Error adding user:", error);
+  }
+});
+
+app.put("/item/:hotelId/:itemId", async (req, res) => {
+  const { hotelId, itemId } = req.params;
+  const updateData = req.body;
+
+  try {
+    const hotel = await hotelDetailsSchema.findById(hotelId);
+    if (!hotel) {
+      return res.status(404).send("Hotel not found.");
+    }
+
+    const item = hotel.hotelItems.id(itemId);
+    if (!item) {
+      return res.status(404).send("Item not found.");
+    }
+
+    item.set(updateData);
+    await hotel.save();
+    res.status(200).send("Item updated successfully");
+  } catch (error) {
+    console.error("Error updating item:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.delete("/deleteitem/:hotelId/:itemId", async (req, res) => {
+  const { hotelId, itemId } = req.params;
+  try {
+    const hotel = await hotelDetailsSchema.findById(hotelId);
+    if (!hotel) {
+      return res.status(404).send("Hotel not found");
+    }
+
+    const itemIndex = hotel.hotelItems.findIndex(
+      (item) => item._id.toString() === itemId
+    );
+    if (itemIndex === -1) {
+      console.log(`item index - ${itemIndex}`);
+      return res.status(404).send("Item not found");
+    }
+
+    hotel.hotelItems.splice(itemIndex, 1);
+    await hotel.save();
+    res.status(200).send("Item removed successfully");
+  } catch (error) {
+    console.error("Error removing item:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.listen(PORT, () => console.log(`SERVER is running in ${PORT}`));

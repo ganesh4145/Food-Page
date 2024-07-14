@@ -9,7 +9,6 @@ const FoodPage = () => {
   const logout = () => {
     console.log(localStorage.getItem("tok"));
     localStorage.clear();
-    navigate("/");
   };
 
   useEffect(() => {
@@ -32,7 +31,9 @@ const FoodPage = () => {
           </Link>
         </div>
       ))}
-      <button onClick={logout}>LogOut</button>
+      <Link to="/">
+        <button onClick={logout}>LogOut</button>
+      </Link>
     </div>
   );
 };

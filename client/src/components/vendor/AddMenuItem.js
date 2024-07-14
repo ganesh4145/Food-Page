@@ -60,7 +60,6 @@ const AddMenuItem = () => {
               placeholder="From Time"
               value={item.fromTime}
               onChange={(e) => handleChange(index, "fromTime", e.target.value)}
-              required
             />
             <label>To Time</label>
             <input
@@ -68,7 +67,6 @@ const AddMenuItem = () => {
               placeholder="To Time"
               value={item.toTime}
               onChange={(e) => handleChange(index, "toTime", e.target.value)}
-              required
             />
             <label>Available Quantity</label>
             <input
@@ -76,7 +74,6 @@ const AddMenuItem = () => {
               placeholder="Quantity"
               value={item.quantity}
               onChange={(e) => handleChange(index, "quantity", e.target.value)}
-              required
             />
             <label>₹</label>
             <input

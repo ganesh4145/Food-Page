@@ -7,19 +7,20 @@ const itemSchema = new mongoose.Schema({
   },
   fromTime: {
     type: String,
-    required: true,
   },
   toTime: {
     type: String,
-    required: true,
   },
   quantity: {
     type: String,
-    required: true,
   },
   price: {
     type: String,
     required: true,
+  },
+  availability: {
+    type: Boolean,
+    default: false,
   },
 });
 
