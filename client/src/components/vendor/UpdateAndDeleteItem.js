@@ -1,12 +1,38 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import { useNavigate } from "react-router-dom";
 
-function UpdateAndDeleteItem() {
+const ItemContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  padding: theme.spacing(2),
+  border: "1px solid #ccc",
+  borderRadius: theme.shape.borderRadius,
+}));
+
+const UpdateAndDeleteItem = () => {
   const [itemList, setItemList] = useState([]);
   const [hotelId, setHotelId] = useState("");
   const [editingItemId, setEditingItemId] = useState(null);
-  const [editedItem, setEditedItem] = useState([]);
+  const [editedItem, setEditedItem] = useState({});
   const hotelName = localStorage.getItem("un");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -65,77 +91,143 @@ function UpdateAndDeleteItem() {
       });
   };
 
+  const logout = () => {
+    console.log(localStorage.getItem("tok"));
+    window.localStorage.clear();
+    window.location.href = "./";
+  };
+
   return (
     <div>
-      <h1>UpdateAndDeleteItem</h1>
-
-      {itemList.map((item) => (
-        <div key={item._id}>
-          {editingItemId === item._id ? (
-            <div>
-              <div>Name - {item.itemName}</div>
-              <div>
-                Price -{" "}
-                <input
-                  type="text"
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            NEEM
+          </Typography>
+          <Button color="inherit" onClick={() => navigate("/vendorpage")}>
+            Home
+          </Button>
+          <Button color="inherit" onClick={logout}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Container>
+        <Typography variant="h4" gutterBottom>
+          Update and Delete Items
+        </Typography>
+        {itemList.map((item) => (
+          <ItemContainer key={item._id}>
+            {editingItemId === item._id ? (
+              <>
+                <TextField
+                  label="Item Name"
+                  variant="outlined"
+                  name="itemName"
+                  value={editedItem.itemName}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <TextField
+                  label="Price"
+                  variant="outlined"
                   name="price"
                   value={editedItem.price}
                   onChange={handleChange}
+                  fullWidth
                 />
-              </div>
-              <div>
-                Availability -{" "}
-                <input
-                  type="checkbox"
-                  name="availability"
-                  checked={editedItem.availability}
-                  onChange={handleChange}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="availability"
+                      checked={editedItem.availability}
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Availability"
                 />
-              </div>
-              <div>
-                FromTime -{" "}
-                <input
+                <TextField
+                  label="From Time"
                   type="time"
+                  variant="outlined"
                   name="fromTime"
                   value={editedItem.fromTime}
                   onChange={handleChange}
+                  fullWidth
                 />
-              </div>
-              <div>
-                ToTime -{" "}
-                <input
+                <TextField
+                  label="To Time"
                   type="time"
+                  variant="outlined"
                   name="toTime"
                   value={editedItem.toTime}
                   onChange={handleChange}
+                  fullWidth
                 />
-              </div>
-              <div>
-                Quantity -{" "}
-                <input
+                <TextField
+                  label="Quantity"
                   type="number"
+                  variant="outlined"
                   name="quantity"
                   value={editedItem.quantity}
                   onChange={handleChange}
+                  fullWidth
                 />
-              </div>
-              <button onClick={() => handleSaveClick(item._id)}>Save</button>
-            </div>
-          ) : (
-            <div>
-              Name - {item.itemName} Price - {item.price} Availability -{" "}
-              {item.availability ? "true" : "false"} FromTime - {item.fromTime}{" "}
-              ToTime - {item.toTime} Quantity - {item.quantity}
-              <div>
-                <button onClick={() => handleEditClick(item)}>Edit</button>
-                <button onClick={() => handleDelete(item._id)}>Delete</button>
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
+                <Box display="flex" justifyContent="space-between" mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleSaveClick(item._id)}
+                    startIcon={<SaveIcon />}
+                  >
+                    Save
+                  </Button>
+                </Box>
+              </>
+            ) : (
+              <>
+                <Typography variant="h6">{item.itemName}</Typography>
+                <Typography>
+                  <strong>Price:</strong> ₹{item.price}
+                </Typography>
+                <Typography>
+                  <strong>Availability:</strong>{" "}
+                  {item.availability ? "Available" : "Unavailable"}
+                </Typography>
+                <Typography>
+                  <strong>From Time:</strong> {item.fromTime}
+                </Typography>
+                <Typography>
+                  <strong>To Time:</strong> {item.toTime}
+                </Typography>
+                <Typography>
+                  <strong>Quantity:</strong> {item.quantity}
+                </Typography>
+                <Box display="flex" justifyContent="space-between" mt={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleEditClick(item)}
+                    startIcon={<EditIcon />}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleDelete(item._id)}
+                    startIcon={<DeleteIcon />}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </>
+            )}
+          </ItemContainer>
+        ))}
+      </Container>
     </div>
   );
-}
+};
 
 export default UpdateAndDeleteItem;

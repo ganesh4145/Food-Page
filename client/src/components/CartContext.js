@@ -41,7 +41,12 @@ export const CartContextProvider = (props) => {
   };
 
   const displayItem = () => {
-    console.log(`cart Items, ${JSON.stringify(cartItems, null, 2)}`);
+    console.log(`Cart Items: ${JSON.stringify(cartItems, null, 2)}`);
+  };
+
+  const getCartCount = () => {
+    console.log(`count`);
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   const contextValue = {
@@ -51,6 +56,7 @@ export const CartContextProvider = (props) => {
     decreaseItem,
     removeItem,
     displayItem,
+    getCartCount,
   };
 
   return (

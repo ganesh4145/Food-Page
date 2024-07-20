@@ -29,18 +29,17 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<Home />}
-              // element={
-              //   loginPrev === "true" ? (
-              //     userType === "Buyer" ? (
-              //       <FoodPage />
-              //     ) : (
-              //       <VendorPage />
-              //     )
-              //   ) : (
-              //     <Home />
-              //   )
-              // }
+              element={
+                loginPrev === "true" ? (
+                  userType === "Buyer" ? (
+                    <Navigate to="/foodpage" />
+                  ) : (
+                    <Navigate to="/vendorpage" />
+                  )
+                ) : (
+                  <Home />
+                )
+              }
             />
             <Route path="/login" element={<Login_Page />} />
             <Route path="/signup" element={<Sign_Up />} />

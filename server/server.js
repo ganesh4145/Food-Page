@@ -128,29 +128,36 @@ app.get("/gkd", async (req, res) => {
 app.put("/passwordupdate", async (req, res) => {
   const { phoneNumber, password } = req.body;
   console.log(req.body);
-  const updationPassword = await userRegisterFoodPage.findOneAndUpdate(
-    { phoneNumber: phoneNumber },
-    { $set: { password: password } }
-  );
-  res.status(200).send("password updated successfully");
   try {
+    const updationPassword = await userRegisterFoodPage.findOneAndUpdate(
+      { phoneNumber: phoneNumber },
+      { $set: { password: password } }
+    );
+    res.status(200).send("password updated successfully");
   } catch (error) {
-    console.error("Error logging in:", error);
+    console.error("Error updating password:", error);
     return res.status(500).send("Internal Server Error");
   }
 });
 
 app.post("/hoteldetails", async (req, res) => {
   try {
+    console.log("1");
+
     const { hotelName, hotelItems } = req.body;
+    console.log(`${hotelName}`);
     const hotel = await hotelDetailsSchema.findOne({ hotelName });
+    console.log(hotel);
+    console.log("2");
     if (hotel) {
+      console.log("3");
       const existingItems = hotel.hotelItems.map((item) => item.itemName);
       const duplicateItems = hotelItems.filter((item) =>
         existingItems.includes(item.itemName)
       );
-
+      console.log("4");
       if (duplicateItems.length > 0) {
+        console.log("5");
         return res
           .status(500)
           .send(
@@ -158,12 +165,17 @@ app.post("/hoteldetails", async (req, res) => {
               duplicateItems.map((item) => item.itemName).join(", ")
           );
       }
-
+      console.log("6");
       hotel.hotelItems.push(...hotelItems);
       await hotel.save();
       return res.status(200).send("Items appended successfully");
     } else {
-      const addHotelDetails = await hotelDetailsSchema.create(req.body);
+      console.log("7");
+      console.log(`body - ${JSON.stringify(req.body)}`);
+      const addHotelDetails = await hotelDetailsSchema.create({
+        hotelName: hotelName,
+        hotelItems: hotelItems,
+      });
       console.log(addHotelDetails);
       return res.status(201).send("details added successfully");
     }
@@ -179,7 +191,7 @@ app.get("/hotelList", async (req, res) => {
     res.status(200).send(viewUser);
   } catch (error) {
     res.status(500).send(error);
-    console.error("Error adding user:", error);
+    console.error("Error retrieving hotel list:", error);
   }
 });
 
@@ -189,7 +201,7 @@ app.get("/hdd", async (req, res) => {
     res.status(200).send(viewUser);
   } catch (error) {
     res.status(500).send(error);
-    console.error("Error adding user:", error);
+    console.error("Error deleting hotels:", error);
   }
 });
 
@@ -197,12 +209,10 @@ app.get("/hotelList/:id", async (req, res) => {
   try {
     const hotelId = req.params.id;
     const menuItems = await hotelDetailsSchema.findById(hotelId);
-    //res.status(200).send(menuItems);
-
     res.status(200).json(menuItems);
   } catch (error) {
     res.status(500).send(error);
-    console.error("Error adding user:", error);
+    console.error("Error retrieving hotel details:", error);
   }
 });
 
@@ -213,7 +223,7 @@ app.get("/item/:name", async (req, res) => {
     res.status(200).json(items);
   } catch (error) {
     res.status(500).send(error);
-    console.error("Error adding user:", error);
+    console.error("Error retrieving hotel items:", error);
   }
 });
 
@@ -253,7 +263,6 @@ app.delete("/deleteitem/:hotelId/:itemId", async (req, res) => {
       (item) => item._id.toString() === itemId
     );
     if (itemIndex === -1) {
-      console.log(`item index - ${itemIndex}`);
       return res.status(404).send("Item not found");
     }
 

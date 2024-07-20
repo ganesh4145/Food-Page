@@ -55,14 +55,13 @@ function Login_Page() {
       });
       console.log(response);
       localStorage.setItem("tok", response.data.token);
-      localStorage.setItem("LoggedIn", true);
+      localStorage.setItem("LoggedIn", "true");
       localStorage.setItem("ty", response.data.userType);
       localStorage.setItem("un", response.data.userName);
       setResponse(response.data.msg);
       if (response.status === 200) {
         navigate(
           response.data.userType === "Buyer" ? "/foodpage" : "/vendorpage"
-          // response.data.userType === "Buyer" ? "/" : "/"
         );
       }
     } catch (error) {

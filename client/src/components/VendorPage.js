@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import { styled } from "@mui/material/styles";
+
+const HotelName = styled(Typography)(({ theme }) => ({
+  fontSize: "2rem",
+  fontWeight: "bold",
+  textAlign: "center",
+  marginBottom: theme.spacing(4),
+}));
+
+const ButtonContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  gap: theme.spacing(2),
+}));
 
 const VendorPage = () => {
   const navigate = useNavigate();
@@ -25,13 +45,35 @@ const VendorPage = () => {
 
   return (
     <div>
-      <div>VendorPage</div>
-      <button onClick={logout}>LogOut</button>
-      <h1>{userName}</h1>
-
-      <button onClick={handleAddMenuItem}>Add Menu Item</button>
-
-      <button onClick={handleUpdateItem}>Update and Delete Menu Item</button>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            NEEM
+          </Typography>
+          <Button color="inherit" onClick={logout}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Container>
+        <HotelName variant="h1">{userName}</HotelName>
+        <ButtonContainer>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddMenuItem}
+          >
+            Add Menu Item
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleUpdateItem}
+          >
+            Update and Delete Menu Item
+          </Button>
+        </ButtonContainer>
+      </Container>
     </div>
   );
 };
