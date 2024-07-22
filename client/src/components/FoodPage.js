@@ -51,7 +51,7 @@ const FoodPage = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             NEEM
           </Typography>
-          <Button color="inherit" component={Link} to="/">
+          <Button color="inherit" component={Link} to="/foodpage">
             Home
           </Button>
           <Button color="inherit" component={Link} to="/cart">

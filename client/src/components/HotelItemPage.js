@@ -26,7 +26,10 @@ const StyledPaper = styled(Paper)(({ theme, disabled }) => ({
 const HotelItemPage = () => {
   const { hotelId } = useParams();
   const [hotel, setHotel] = useState(null);
-  const { addToCart, cartCount } = useContext(ItemContext); // Access cartCount from context
+  const [exists, setExists] = useState(false);
+  const [itemId, setItemId] = useState("");
+  const [userName, setUserName] = useState("");
+  //const { addToCart, cartCount } = useContext(ItemContext);
   const date = new Date();
   const showTime = date.getHours() + ":" + date.getMinutes();
   const navigate = useNavigate();
@@ -51,6 +54,41 @@ const HotelItemPage = () => {
     return <div>Loading...</div>;
   }
 
+  const addToCart = (e) => {
+    setItemId(e._id);
+    const item = {
+      hotelId: hotelId,
+      userId: localStorage.getItem("uid"),
+      itemId: e._id,
+    };
+    axios
+      .post("http://localhost:3500/addcart", item)
+      .then((res) => {
+        console.log(res);
+        if (res.data.exists) {
+          setExists(true);
+        }
+      })
+      .catch((err) => console.error(err));
+    console.log(`cart item ${JSON.stringify(item)}`);
+  };
+
+  const replaceToCart = (e) => {
+    const item = {
+      hotelId: hotelId,
+      userId: localStorage.getItem("uid"),
+      itemId: itemId,
+    };
+    axios
+      .post("http://localhost:3500/replacecart", item)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.error(err));
+    console.log(`cart item ${JSON.stringify(item)}`);
+    setExists(false);
+  };
+
   return (
     <div>
       <AppBar position="static">
@@ -58,11 +96,11 @@ const HotelItemPage = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             NEEM
           </Typography>
-          <Button color="inherit" component={Link} to="/">
+          <Button color="inherit" component={Link} to="/foodpage">
             Home
           </Button>
           <Button color="inherit" component={Link} to="/cart">
-            Cart ({cartCount}) {/* Display cart count */}
+            Cart
           </Button>
           <Button color="inherit" onClick={logout}>
             Logout
@@ -101,6 +139,13 @@ const HotelItemPage = () => {
               </Grid>
             );
           })}
+          {exists && (
+            <div>
+              <p>Item already exists in the cart. Do you want to replace it?</p>
+              <button onClick={replaceToCart}>Yes</button>
+              <button onClick={() => setExists(false)}>No</button>
+            </div>
+          )}
         </Grid>
       </Container>
     </div>

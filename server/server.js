@@ -7,6 +7,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const userRegisterFoodPage = require("./schema/user");
 const hotelDetailsSchema = require("./schema/schema");
+const cartSchema = require("./schema/cart");
 const { v4: uuidv4 } = require("uuid");
 app.use(express.json());
 
@@ -95,6 +96,7 @@ app.post("/login", async (req, res) => {
         token: userId,
         userType: user.type,
         userName: user.name,
+        userId: user._id,
       });
     } else {
       return res.status(401).send("Incorrect password.");
@@ -105,7 +107,19 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/gk", async (req, res) => {
+app.get("/userdetails", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const userName = await userRegisterFoodPage.findById(id);
+    console.log(userName);
+    res.status(200).send(userName.name);
+  } catch (error) {
+    res.status(500).send(error);
+    console.error("Error adding user:", error);
+  }
+});
+
+app.get("/userlist", async (req, res) => {
   try {
     const viewUser = await userRegisterFoodPage.find();
     res.status(200).send(viewUser);
@@ -271,7 +285,120 @@ app.delete("/deleteitem/:hotelId/:itemId", async (req, res) => {
     res.status(200).send("Item removed successfully");
   } catch (error) {
     console.error("Error removing item:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send(error);
+  }
+});
+
+app.post("/addcart", async (req, res) => {
+  try {
+    const { hotelId, userId, itemId } = req.body;
+    console.log(`${hotelId} - ${userId} + ${itemId}`);
+    const hotel = await hotelDetailsSchema.findById(hotelId);
+    const user = await userRegisterFoodPage.findById(userId);
+    const item = await hotel.hotelItems.id(itemId);
+    const cartList = await cartSchema.findOne({ userId: userId });
+    if (cartList && userId === cartList.userId) {
+      if (hotelId === cartList.hotelId) {
+        const indexItem = cartList.items.findIndex(
+          (item) => item.itemId === itemId
+        );
+        if (indexItem !== -1) {
+          cartList.items[indexItem].quantity += 1;
+          //cartList.total += item.price;
+          await cartList.save();
+          res.status(200).send("Item quantity increased");
+        } else {
+          cartList.items.push({
+            itemName: item.itemName,
+            itemId: itemId,
+            price: item.price,
+            quantity: 1,
+            //total: item.price * 1,
+          });
+          await cartList.save();
+          res.status(200).send("New item added");
+        }
+      } else {
+        res.status(200).send({
+          exists: true,
+          message:
+            "In your cart already item exist. Do you want to remove old item and add new item?",
+          existsItem: req.body,
+        });
+      }
+    } else {
+      const cart = [
+        {
+          hotelId: hotelId,
+          //hotelName: hotel.hotelName,
+          userId: userId,
+          //userName: user.name,
+          //total: total,
+          items: {
+            itemName: item.itemName,
+            itemId: itemId,
+            price: item.price,
+            quantity: 1,
+            //total: item.price * 1,
+          },
+        },
+      ];
+      const addCart = await cartSchema.create(cart);
+      res.status(200).send("Item added");
+    }
+  } catch (error) {
+    console.error("Error adding cart", error);
+    res.status(500).send(error);
+  }
+});
+
+app.get("/cartList", async (req, res) => {
+  try {
+    const cart = await cartSchema.find();
+    res.status(200).send(cart);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.get("/cartdeletemany", async (req, res) => {
+  try {
+    const deletecart = await cartSchema.deleteMany();
+    res.status(200).send(deletecart);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.post("/replacecart", async (req, res) => {
+  try {
+    const { hotelId, userId, itemId } = req.body;
+    const hotel = await hotelDetailsSchema.findById(hotelId);
+    const user = await userRegisterFoodPage.findById(userId);
+    const item = await hotel.hotelItems.id(itemId);
+    const removeExist = await cartSchema.deleteOne({ userId: userId });
+    console.log({ removeExist });
+    console.log(req.body);
+    console.log({ item });
+
+    const cart = [
+      {
+        hotelId: hotelId,
+        userId: userId,
+        items: {
+          itemName: item.itemName,
+          itemId: itemId,
+          price: item.price,
+          quantity: 1,
+        },
+      },
+    ];
+
+    const addCart = await cartSchema.create(cart);
+    res.status(200).send("Item added");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
   }
 });
 

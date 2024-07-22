@@ -57,7 +57,7 @@ function Login_Page() {
       localStorage.setItem("tok", response.data.token);
       localStorage.setItem("LoggedIn", "true");
       localStorage.setItem("ty", response.data.userType);
-      localStorage.setItem("un", response.data.userName);
+      localStorage.setItem("uid", response.data.userId);
       setResponse(response.data.msg);
       if (response.status === 200) {
         navigate(
