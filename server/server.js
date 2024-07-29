@@ -107,9 +107,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/userdetails", async (req, res) => {
+app.get("/userdetails/:id", async (req, res) => {
   try {
-    const { id } = req.body;
+    console.log(req.params);
+    const { id } = req.params;
     const userName = await userRegisterFoodPage.findById(id);
     console.log(userName);
     res.status(200).send(userName.name);
@@ -233,7 +234,11 @@ app.get("/hotelList/:id", async (req, res) => {
 app.get("/item/:name", async (req, res) => {
   try {
     const hotelName = req.params.name;
-    const items = await hotelDetailsSchema.findOne({ hotelName: hotelName });
+    const userName = await userRegisterFoodPage.findById({ _id: hotelName });
+    console.log(userName);
+    const items = await hotelDetailsSchema.findOne({
+      hotelName: userName.name,
+    });
     res.status(200).json(items);
   } catch (error) {
     res.status(500).send(error);
@@ -262,30 +267,6 @@ app.put("/item/:hotelId/:itemId", async (req, res) => {
   } catch (error) {
     console.error("Error updating item:", error);
     res.status(500).send("Internal Server Error");
-  }
-});
-
-app.delete("/deleteitem/:hotelId/:itemId", async (req, res) => {
-  const { hotelId, itemId } = req.params;
-  try {
-    const hotel = await hotelDetailsSchema.findById(hotelId);
-    if (!hotel) {
-      return res.status(404).send("Hotel not found");
-    }
-
-    const itemIndex = hotel.hotelItems.findIndex(
-      (item) => item._id.toString() === itemId
-    );
-    if (itemIndex === -1) {
-      return res.status(404).send("Item not found");
-    }
-
-    hotel.hotelItems.splice(itemIndex, 1);
-    await hotel.save();
-    res.status(200).send("Item removed successfully");
-  } catch (error) {
-    console.error("Error removing item:", error);
-    res.status(500).send(error);
   }
 });
 
@@ -399,6 +380,104 @@ app.post("/replacecart", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
+  }
+});
+
+app.get("/cartlist/:userid", async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const cart = await cartSchema.findOne({ userId: userid });
+    res.status(200).send({ cart });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.get("/availability/:hotelId/:itemId", async (req, res) => {
+  try {
+    const { hotelId, itemId } = req.params;
+    const hotel = await hotelDetailsSchema.findById(hotelId);
+    const itemAvailability = hotel.hotelItems.id(itemId).availability;
+    res.send({ itemAvailability });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.put("/increasecount/:userId/:itemId", async (req, res) => {
+  try {
+    const { userId, itemId } = req.params;
+    const cartList = await cartSchema.findOne({ userId: userId });
+    const indexItem = cartList.items.findIndex(
+      (item) => item.itemId === itemId
+    );
+    if (indexItem !== -1) {
+      cartList.items[indexItem].quantity += 1;
+      //cartList.total += item.price;
+      await cartList.save();
+      res.status(200).send("Item quantity increased");
+    } else {
+      return res.status(404).send("Item not found in cart");
+    }
+  } catch (error) {
+    res.status(500).send(`Error: ${error}`);
+  }
+});
+
+app.put("/decresecount/:userId/:itemId", async (req, res) => {
+  try {
+    const { userId, itemId } = req.params;
+    const cart = await cartSchema.findOne({ userId });
+    const itemIndex = cart.items.findIndex((item) => item.itemId === itemId);
+    if (itemIndex !== -1) {
+      cart.items[itemIndex].quantity -= 1;
+      await cart.save();
+      res.status(200).send("item count decrease");
+    } else {
+      return res.status(404).send("Item not found in cart");
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.delete("/removeitem/:userId/:itemId", async (req, res) => {
+  try {
+    const { userId, itemId } = req.params;
+    const cart = await cartSchema.findOne({ userId });
+    const itemIndex = cart.items.findIndex((item) => item.itemId === itemId);
+    if (itemIndex !== -1) {
+      cart.items.splice(itemIndex, 1);
+      await cart.save();
+      res.status(200).send("Item removed from cart");
+    } else {
+      return res.status(404).send("Item not found in cart");
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.post("/orderItem/:userId", async (req, res) => {
+  try {
+    const { item, hotelId } = req.body;
+    const { userId } = req.params;
+    const itemsValue = item.map((item) => item.itemName);
+    const deleteItem = await cartSchema.deleteOne({ userId });
+    res.send(hotelId);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.get("/hotelname/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userName = await hotelDetailsSchema.findById({ _id: id });
+    console.log(userName);
+    res.status(200).send({ user: userName.hotelName });
+  } catch (error) {
+    res.status(500).send(error);
   }
 });
 

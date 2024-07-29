@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
+import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
@@ -25,7 +26,7 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
 
 const FoodPage = () => {
   const [hotelList, setHotelList] = useState([]);
-  const { cartCount } = useContext(ItemContext); // Access cartCount from context
+  const { cartCount } = useContext(ItemContext);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -55,7 +56,7 @@ const FoodPage = () => {
             Home
           </Button>
           <Button color="inherit" component={Link} to="/cart">
-            Cart ({cartCount}) {/* Display cart count */}
+            Cart ({cartCount})
           </Button>
           <Button color="inherit" onClick={logout}>
             Logout
@@ -66,18 +67,18 @@ const FoodPage = () => {
         <Typography variant="h4" gutterBottom>
           Hotel List
         </Typography>
-        <List>
+        <Grid container spacing={2}>
           {hotelList.map((hotel) => (
-            <ListItem key={hotel._id}>
+            <Grid item xs={12} sm={6} key={hotel._id}>
               <StyledListItemButton
                 component={Link}
                 to={`/hotelList/${hotel._id}`}
               >
                 <Typography variant="h6">{hotel.hotelName}</Typography>
               </StyledListItemButton>
-            </ListItem>
+            </Grid>
           ))}
-        </List>
+        </Grid>
       </Container>
     </div>
   );

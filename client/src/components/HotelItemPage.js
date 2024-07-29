@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ItemContext } from "./CartContext";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -10,6 +9,11 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const StyledPaper = styled(Paper)(({ theme, disabled }) => ({
   padding: theme.spacing(2),
@@ -28,11 +32,9 @@ const HotelItemPage = () => {
   const [hotel, setHotel] = useState(null);
   const [exists, setExists] = useState(false);
   const [itemId, setItemId] = useState("");
-  const [userName, setUserName] = useState("");
-  //const { addToCart, cartCount } = useContext(ItemContext);
+  const navigate = useNavigate();
   const date = new Date();
   const showTime = date.getHours() + ":" + date.getMinutes();
-  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -45,7 +47,6 @@ const HotelItemPage = () => {
   }, [hotelId]);
 
   const logout = () => {
-    console.log(localStorage.getItem("tok"));
     localStorage.clear();
     navigate("/");
   };
@@ -54,26 +55,24 @@ const HotelItemPage = () => {
     return <div>Loading...</div>;
   }
 
-  const addToCart = (e) => {
-    setItemId(e._id);
-    const item = {
+  const addToCart = (item) => {
+    const cartItem = {
       hotelId: hotelId,
       userId: localStorage.getItem("uid"),
-      itemId: e._id,
+      itemId: item._id,
     };
     axios
-      .post("http://localhost:3500/addcart", item)
+      .post("http://localhost:3500/addcart", cartItem)
       .then((res) => {
-        console.log(res);
         if (res.data.exists) {
           setExists(true);
+          setItemId(item._id);
         }
       })
       .catch((err) => console.error(err));
-    console.log(`cart item ${JSON.stringify(item)}`);
   };
 
-  const replaceToCart = (e) => {
+  const replaceToCart = () => {
     const item = {
       hotelId: hotelId,
       userId: localStorage.getItem("uid"),
@@ -83,10 +82,9 @@ const HotelItemPage = () => {
       .post("http://localhost:3500/replacecart", item)
       .then((res) => {
         console.log(res);
+        setExists(false);
       })
       .catch((err) => console.error(err));
-    console.log(`cart item ${JSON.stringify(item)}`);
-    setExists(false);
   };
 
   return (
@@ -139,14 +137,23 @@ const HotelItemPage = () => {
               </Grid>
             );
           })}
-          {exists && (
-            <div>
-              <p>Item already exists in the cart. Do you want to replace it?</p>
-              <button onClick={replaceToCart}>Yes</button>
-              <button onClick={() => setExists(false)}>No</button>
-            </div>
-          )}
         </Grid>
+        <Dialog open={exists} onClose={() => setExists(false)}>
+          <DialogTitle>Item Exists</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Item already exists in the cart. Do you want to replace it?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={replaceToCart} color="primary">
+              Yes
+            </Button>
+            <Button onClick={() => setExists(false)} color="primary">
+              No
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </div>
   );

@@ -31,11 +31,13 @@ const UpdateAndDeleteItem = () => {
   const [hotelId, setHotelId] = useState("");
   const [editingItemId, setEditingItemId] = useState(null);
   const [editedItem, setEditedItem] = useState({});
-  const hotelName = localStorage.getItem("un");
+  const hotelName = localStorage.getItem("uid");
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(hotelName);
     axios
+
       .get(`http://localhost:3500/item/${hotelName}`)
       .then((res) => {
         console.log(res.data.hotelItems);
