@@ -72,6 +72,13 @@ app.post("/userregister", async (req, res) => {
 
     const newUserRegister = await userRegisterFoodPage.create(req.body);
     console.log(newUserRegister);
+    if (req.body.type === "Seller") {
+      const addHotelDetails = await hotelDetailsSchema.create({
+        hotelName: req.body.name,
+        hotelId: newUserRegister._id,
+        hotelItems: [],
+      });
+    }
     return res.status(201).send("User added successfully");
   } catch (error) {
     console.error("Error adding user:", error);
@@ -159,9 +166,9 @@ app.post("/hoteldetails", async (req, res) => {
   try {
     console.log("1");
 
-    const { hotelName, hotelItems } = req.body;
-    console.log(`${hotelName}`);
-    const hotel = await hotelDetailsSchema.findOne({ hotelName });
+    const { hotelId, hotelItems } = req.body;
+    console.log(`${hotelId}`);
+    const hotel = await hotelDetailsSchema.findOne({ hotelId });
     console.log(hotel);
     console.log("2");
     if (hotel) {
@@ -473,8 +480,8 @@ app.post("/orderItem/:userId", async (req, res) => {
 app.get("/hotelname/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const userName = await hotelDetailsSchema.findById({ _id: id });
-    console.log(userName);
+    const userName = await hotelDetailsSchema.findOne({ hotelId: id });
+    console.log(userName.user);
     res.status(200).send({ user: userName.hotelName });
   } catch (error) {
     res.status(500).send(error);

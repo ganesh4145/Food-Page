@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { styled } from "@mui/material/styles";
+import axios from "axios";
 
 const HotelName = styled(Typography)(({ theme }) => ({
   fontSize: "2rem",
@@ -23,6 +24,7 @@ const ButtonContainer = styled(Box)(({ theme }) => ({
 
 const VendorPage = () => {
   const navigate = useNavigate();
+  const hotelId = localStorage.getItem("uid");
   const [userName, setUserName] = useState("");
 
   const logout = () => {
@@ -32,8 +34,16 @@ const VendorPage = () => {
   };
 
   useEffect(() => {
-    setUserName(localStorage.getItem("un"));
-  }, []);
+    axios
+      .get(`http://localhost:3500/hotelname/${hotelId}`)
+      .then((res) => {
+        console.log(res);
+        setUserName(res.data.user); // Assuming the API response has a user object with a name property
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [hotelId]);
 
   const handleAddMenuItem = () => {
     navigate("/addItemMenu");

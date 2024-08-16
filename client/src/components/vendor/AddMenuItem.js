@@ -55,8 +55,8 @@ const AddMenuItem = () => {
 
   const addItems = async (e) => {
     e.preventDefault();
-    const hotelName = localStorage.getItem("un");
-    const item = { hotelName, hotelItems: items };
+    const hotelId = localStorage.getItem("uid");
+    const item = { hotelId, hotelItems: items };
     console.log("Items submitted:", JSON.stringify(item));
     await axios
       .post("http://localhost:3500/hoteldetails", item, {

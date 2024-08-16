@@ -27,7 +27,9 @@ const itemSchema = new mongoose.Schema({
 const hotelDetailsSchema = new mongoose.Schema({
   hotelName: {
     type: String,
-    required: true,
+  },
+  hotelId: {
+    type: String,
   },
   hotelItems: {
     type: [itemSchema],
