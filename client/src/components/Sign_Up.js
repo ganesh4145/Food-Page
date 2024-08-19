@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -15,6 +13,8 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { styled } from "@mui/material/styles";
+import CustomAppBar from "./CustomAppBar";
+import axiosInstance from "./axiosInstance";
 
 const RootContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -82,8 +82,8 @@ const Sign_Up = () => {
     };
     console.log(request);
     try {
-      await axios
-        .post("http://localhost:3500/userregister", request, {
+      await axiosInstance
+        .post("/userregister", request, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -122,23 +122,12 @@ const Sign_Up = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static">
-        <Container>
-          <NavContainer>
-            <Typography variant="h6" noWrap>
-              NEEM
-            </Typography>
-            <div>
-              <Button color="inherit" component={Link} to="/">
-                Home
-              </Button>
-              <Button color="inherit" component={Link} to="/login">
-                Login
-              </Button>
-            </div>
-          </NavContainer>
-        </Container>
-      </AppBar>
+      <CustomAppBar
+        navItems={[
+          { label: "Home", path: "/" },
+          { label: "Login", path: "/login" },
+        ]}
+      />
       <RootContainer>
         <Typography variant="h4" gutterBottom>
           Sign Up

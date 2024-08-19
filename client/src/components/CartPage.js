@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
+import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -18,6 +16,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import CustomAppBar from "./CustomAppBar";
+import axiosInstance from "./axiosInstance";
 
 const CartPage = () => {
   const [cartItem, setCartItem] = useState([]);
@@ -26,15 +26,14 @@ const CartPage = () => {
   const userId = localStorage.getItem("uid");
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
-  const [hotelName, setHotelName] = useState("");
 
   useEffect(() => {
     fetchCartItems();
   }, []);
 
   const fetchCartItems = async () => {
-    await axios
-      .get(`http://localhost:3500/cartlist/${userId}`)
+    await axiosInstance
+      .get(`/cartlist/${userId}`)
       .then((res) => {
         setCartItem(res.data.cart.items);
         setHotelId(res.data.cart.hotelId);
@@ -46,35 +45,27 @@ const CartPage = () => {
   };
 
   const itemCountIncrease = (id) => {
-    axios
-      .put(`http://localhost:3500/increasecount/${userId}/${id}`)
-      .then(() => {
-        fetchCartItems();
-      });
+    axiosInstance.put(`/increasecount/${userId}/${id}`).then(() => {
+      fetchCartItems();
+    });
   };
 
   const itemCountDecrease = (item) => {
     if (item.quantity > 1) {
-      axios
-        .put(`http://localhost:3500/decresecount/${userId}/${item.itemId}`)
-        .then(() => {
-          fetchCartItems();
-        });
+      axiosInstance.put(`/decresecount/${userId}/${item.itemId}`).then(() => {
+        fetchCartItems();
+      });
     } else {
-      axios
-        .delete(`http://localhost:3500/removeitem/${userId}/${item.itemId}`)
-        .then(() => {
-          fetchCartItems();
-        });
+      axios.delete(`/removeitem/${userId}/${item.itemId}`).then(() => {
+        fetchCartItems();
+      });
     }
   };
 
   const itemRemove = (id) => {
-    axios
-      .delete(`http://localhost:3500/removeitem/${userId}/${id}`)
-      .then(() => {
-        fetchCartItems();
-      });
+    axiosInstance.delete(`/removeitem/${userId}/${id}`).then(() => {
+      fetchCartItems();
+    });
   };
 
   const calculateTotal = () => {
@@ -87,8 +78,8 @@ const CartPage = () => {
   const checkAvailability = async () => {
     const unavailable = [];
     for (const item of cartItem) {
-      const res = await axios.get(
-        `http://localhost:3500/availability/${hotelId}/${item.itemId}`
+      const res = await axiosInstance.get(
+        `/availability/${hotelId}/${item.itemId}`
       );
       if (!res.data.itemAvailability) {
         unavailable.push(item);
@@ -98,19 +89,16 @@ const CartPage = () => {
   };
 
   const order = async () => {
-    console.log(`cartItem - ${cartItem}`);
+    console.log(`cartItem - ${JSON.stringify.cartItem}`);
     const unavailableItems = await checkAvailability();
     if (unavailableItems.length > 0) {
       setUnavailableItems(unavailableItems);
     } else {
-      axios
-        .post(
-          `http://localhost:3500/orderItem/${localStorage.getItem("uid")}`,
-          {
-            item: cartItem,
-            hotelId: hotelId,
-          }
-        )
+      axiosInstance
+        .post(`/orderItem/${localStorage.getItem("uid")}`, {
+          item: cartItem,
+          hotelId: hotelId,
+        })
         .then((res) => {
           console.log(res.data);
           setCartItem([]);
@@ -123,29 +111,15 @@ const CartPage = () => {
     }
   };
 
-  const logout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
-
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            NEEM
-          </Typography>
-          <Button color="inherit" component={Link} to="/foodpage">
-            Home
-          </Button>
-          <Button color="inherit" component={Link} to="/cart">
-            Cart
-          </Button>
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar
+        navItems={[
+          { label: "Home", path: "/foodpage" },
+          { label: "Cart", path: "/cart" },
+        ]}
+        logout
+      />
       <Container>
         <Typography variant="h4" gutterBottom>
           Cart Items

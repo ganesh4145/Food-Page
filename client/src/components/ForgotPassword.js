@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
+import CustomAppBar from "./CustomAppBar";
+import axiosInstance from "./axiosInstance";
 
 const RootContainer = styled("div")(({ theme }) => ({
   display: "flex",
@@ -48,15 +46,11 @@ function ForgotPassword() {
       password: password,
     };
     try {
-      const res = await axios.put(
-        "http://localhost:3500/passwordupdate",
-        value,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axiosInstance.put("/passwordupdate", value, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       console.log(`${res.data}`);
       setResponse(res.data);
       setPassword("");
@@ -75,26 +69,13 @@ function ForgotPassword() {
 
   return (
     <>
-      <AppBar position="static">
-        <Container>
-          <NavContainer>
-            <Typography variant="h6" noWrap>
-              NEEM
-            </Typography>
-            <div>
-              <Button color="inherit" component={Link} to="/">
-                Home
-              </Button>
-              <Button color="inherit" component={Link} to="/login">
-                Login
-              </Button>
-              <Button color="inherit" component={Link} to="/signup">
-                Sign Up
-              </Button>
-            </div>
-          </NavContainer>
-        </Container>
-      </AppBar>
+      <CustomAppBar
+        navItems={[
+          { label: "Home", path: "/" },
+          { label: "Login", path: "/login" },
+          { label: "Sign Up", path: "/signup" },
+        ]}
+      />
       <RootContainer>
         <Container>
           <FormContainer onSubmit={changepassword}>

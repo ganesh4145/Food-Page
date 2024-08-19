@@ -14,7 +14,6 @@ import VendorPage from "./components/VendorPage";
 import AddMenuItem from "./components/vendor/AddMenuItem";
 import HotelItemPage from "./components/HotelItemPage";
 import CartPage from "./components/CartPage";
-import { CartContextProvider } from "./components/CartContext";
 import UpdateAndDeleteItem from "./components/vendor/UpdateAndDeleteItem";
 import PrivateRouter from "./components/PrivateRouter";
 
@@ -23,57 +22,55 @@ function App() {
   const userType = localStorage.getItem("ty");
 
   return (
-    <CartContextProvider>
-      <Router>
-        <div>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                loginPrev === "true" ? (
-                  userType === "Buyer" ? (
-                    <Navigate to="/foodpage" />
-                  ) : (
-                    <Navigate to="/vendorpage" />
-                  )
+    <Router>
+      <div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              loginPrev === "true" ? (
+                userType === "Buyer" ? (
+                  <Navigate to="/foodpage" />
                 ) : (
-                  <Home />
+                  <Navigate to="/vendorpage" />
                 )
-              }
-            />
-            <Route path="/login" element={<Login_Page />} />
-            <Route path="/signup" element={<Sign_Up />} />
-            <Route path="/forgotpassword" element={<ForgotPassword />} />
+              ) : (
+                <Home />
+              )
+            }
+          />
+          <Route path="/login" element={<Login_Page />} />
+          <Route path="/signup" element={<Sign_Up />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
 
-            {/* Protected Routes */}
-            <Route
-              path="/foodpage"
-              element={<PrivateRouter element={<FoodPage />} />}
-            />
-            <Route
-              path="/vendorpage"
-              element={<PrivateRouter element={<VendorPage />} />}
-            />
-            <Route
-              path="/addItemMenu"
-              element={<PrivateRouter element={<AddMenuItem />} />}
-            />
-            <Route
-              path="/hotelList/:hotelId"
-              element={<PrivateRouter element={<HotelItemPage />} />}
-            />
-            <Route
-              path="/cart"
-              element={<PrivateRouter element={<CartPage />} />}
-            />
-            <Route
-              path="/updateitem"
-              element={<PrivateRouter element={<UpdateAndDeleteItem />} />}
-            />
-          </Routes>
-        </div>
-      </Router>
-    </CartContextProvider>
+          {/* Protected Routes */}
+          <Route
+            path="/foodpage"
+            element={<PrivateRouter element={<FoodPage />} />}
+          />
+          <Route
+            path="/vendorpage"
+            element={<PrivateRouter element={<VendorPage />} />}
+          />
+          <Route
+            path="/addItemMenu"
+            element={<PrivateRouter element={<AddMenuItem />} />}
+          />
+          <Route
+            path="/hotelList/:hotelId"
+            element={<PrivateRouter element={<HotelItemPage />} />}
+          />
+          <Route
+            path="/cart"
+            element={<PrivateRouter element={<CartPage />} />}
+          />
+          <Route
+            path="/updateitem"
+            element={<PrivateRouter element={<UpdateAndDeleteItem />} />}
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

@@ -1,12 +1,8 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -14,7 +10,8 @@ import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { useNavigate } from "react-router-dom";
+import CustomAppBar from "../CustomAppBar";
+import axiosInstance from "../axiosInstance";
 
 const ItemContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -32,13 +29,11 @@ const UpdateAndDeleteItem = () => {
   const [editingItemId, setEditingItemId] = useState(null);
   const [editedItem, setEditedItem] = useState({});
   const hotelName = localStorage.getItem("uid");
-  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(hotelName);
-    axios
-
-      .get(`http://localhost:3500/item/${hotelName}`)
+    axiosInstance
+      .get(`/item/${hotelName}`)
       .then((res) => {
         console.log(res.data.hotelItems);
         setItemList(res.data.hotelItems);
@@ -68,9 +63,8 @@ const UpdateAndDeleteItem = () => {
     );
     setItemList(updatedItems);
     setEditingItemId(null);
-
-    axios
-      .put(`http://localhost:3500/item/${hotelId}/${id}`, editedItem)
+    axiosInstance
+      .put(`/item/${hotelId}/${id}`, editedItem)
       .then((res) => {
         console.log("Item updated successfully");
       })
@@ -81,8 +75,8 @@ const UpdateAndDeleteItem = () => {
   };
 
   const handleDelete = (id) => {
-    axios
-      .delete(`http://localhost:3500/deleteitem/${hotelId}/${id}`)
+    axiosInstance
+      .delete(`/deleteitem/${hotelId}/${id}`)
       .then((res) => {
         console.log("Item deleted successfully");
         const updatedItems = itemList.filter((item) => item._id !== id);
@@ -93,27 +87,12 @@ const UpdateAndDeleteItem = () => {
       });
   };
 
-  const logout = () => {
-    console.log(localStorage.getItem("tok"));
-    window.localStorage.clear();
-    window.location.href = "./";
-  };
-
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            NEEM
-          </Typography>
-          <Button color="inherit" onClick={() => navigate("/vendorpage")}>
-            Home
-          </Button>
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar
+        navItems={[{ label: "Home", path: "/vendorpage" }]}
+        logout
+      />
       <Container>
         <Typography variant="h4" gutterBottom>
           Update and Delete Items

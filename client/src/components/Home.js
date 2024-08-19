@@ -115,8 +115,8 @@ export default function ButtonBaseDemo() {
           display: "flex",
           flexWrap: "wrap",
           minWidth: 300,
-          width: "calc(100% - 40px)", // Reduced width
-          margin: "20px", // Added margin for space
+          width: "calc(100% - 40px)",
+          margin: "20px",
         }}
       >
         {images.map((image) => (
@@ -126,8 +126,8 @@ export default function ButtonBaseDemo() {
             to={image.linkto}
             key={image.title}
             style={{
-              width: image.width === "50%" ? "calc(50% - 20px)" : "100%", // Adjusted width for login and signup buttons
-              margin: "10px", // Added margin between buttons
+              width: image.width === "50%" ? "calc(50% - 20px)" : "100%",
+              margin: "10px",
             }}
           >
             <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />

@@ -1,8 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -11,6 +7,8 @@ import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
+import CustomAppBar from "../CustomAppBar";
+import axiosInstance from "../axiosInstance";
 
 const FormContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -30,7 +28,6 @@ const ItemContainer = styled(Box)(({ theme }) => ({
 }));
 
 const AddMenuItem = () => {
-  const navigate = useNavigate();
   const [items, setItems] = useState([
     { itemName: "", fromTime: "", toTime: "", quantity: "", price: "" },
   ]);
@@ -58,40 +55,25 @@ const AddMenuItem = () => {
     const hotelId = localStorage.getItem("uid");
     const item = { hotelId, hotelItems: items };
     console.log("Items submitted:", JSON.stringify(item));
-    await axios
-      .post("http://localhost:3500/hoteldetails", item, {
+    await axiosInstance
+      .post("/hoteldetails", item, {
         headers: {
           "Content-Type": "application/json",
         },
       })
       .then((response) => console.log(response))
       .catch((err) => console.error(err));
-    // setItems([
-    //   { itemName: "", fromTime: "", toTime: "", quantity: "", price: "" },
-    // ]);
-  };
-
-  const logout = () => {
-    console.log(localStorage.getItem("tok"));
-    window.localStorage.clear();
-    window.location.href = "./";
+    setItems([
+      { itemName: "", fromTime: "", toTime: "", quantity: "", price: "" },
+    ]);
   };
 
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            NEEM
-          </Typography>
-          <Button color="inherit" onClick={() => navigate("/vendorpage")}>
-            Home
-          </Button>
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar
+        navItems={[{ label: "Home", path: "/vendorpage" }]}
+        logout
+      />
       <FormContainer>
         <Typography variant="h4" gutterBottom>
           Add Menu Item

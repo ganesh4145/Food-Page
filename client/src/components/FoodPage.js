@@ -1,18 +1,12 @@
-import React, { useEffect, useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-import { ItemContext } from "./CartContext";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
+import CustomAppBar from "./CustomAppBar";
+import axiosInstance from "./axiosInstance";
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   "&:hover": {
@@ -26,18 +20,10 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
 
 const FoodPage = () => {
   const [hotelList, setHotelList] = useState([]);
-  const { cartCount } = useContext(ItemContext);
-  const navigate = useNavigate();
-
-  const logout = () => {
-    console.log(localStorage.getItem("tok"));
-    localStorage.clear();
-    navigate("/");
-  };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3500/hotelList")
+    axiosInstance
+      .get("/hotelList")
       .then((response) => {
         console.log(response.data);
         setHotelList(response.data);
@@ -47,22 +33,13 @@ const FoodPage = () => {
 
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            NEEM
-          </Typography>
-          <Button color="inherit" component={Link} to="/foodpage">
-            Home
-          </Button>
-          <Button color="inherit" component={Link} to="/cart">
-            Cart ({cartCount})
-          </Button>
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar
+        navItems={[
+          { label: "Home", path: "/foodpage" },
+          { label: "Cart", path: "/cart" },
+        ]}
+        logout
+      />
       <Container>
         <Typography variant="h4" gutterBottom>
           Hotel List

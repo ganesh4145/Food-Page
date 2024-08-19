@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { styled } from "@mui/material/styles";
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
+import CustomAppBar from "./CustomAppBar";
 
 const HotelName = styled(Typography)(({ theme }) => ({
   fontSize: "2rem",
@@ -27,15 +26,9 @@ const VendorPage = () => {
   const hotelId = localStorage.getItem("uid");
   const [userName, setUserName] = useState("");
 
-  const logout = () => {
-    console.log(localStorage.getItem("tok"));
-    window.localStorage.clear();
-    window.location.href = "./";
-  };
-
   useEffect(() => {
-    axios
-      .get(`http://localhost:3500/hotelname/${hotelId}`)
+    axiosInstance
+      .get(`/hotelname/${hotelId}`)
       .then((res) => {
         console.log(res);
         setUserName(res.data.user); // Assuming the API response has a user object with a name property
@@ -55,16 +48,7 @@ const VendorPage = () => {
 
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            NEEM
-          </Typography>
-          <Button color="inherit" onClick={logout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar logout />
       <Container>
         <HotelName variant="h1">{userName}</HotelName>
         <ButtonContainer>

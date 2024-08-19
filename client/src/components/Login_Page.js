@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -9,6 +7,8 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
+import CustomAppBar from "./CustomAppBar";
+import axiosInstance from "./axiosInstance";
 
 const RootContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -48,11 +48,15 @@ function Login_Page() {
         phoneNumber: phoneNumber,
         password: password,
       };
-      const response = await axios.post("http://localhost:3500/login", login, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axiosInstance.post(
+        "http://localhost:3500/login",
+        login,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response);
       localStorage.setItem("tok", response.data.token);
       localStorage.setItem("LoggedIn", "true");
@@ -72,23 +76,12 @@ function Login_Page() {
 
   return (
     <div>
-      <AppBar position="static">
-        <Container>
-          <NavContainer>
-            <Typography variant="h6" noWrap>
-              NEEM
-            </Typography>
-            <div>
-              <Button color="inherit" component={Link} to="/">
-                Home
-              </Button>
-              <Button color="inherit" component={Link} to="/signup">
-                Sign Up
-              </Button>
-            </div>
-          </NavContainer>
-        </Container>
-      </AppBar>
+      <CustomAppBar
+        navItems={[
+          { label: "Home", path: "/" },
+          { label: "Sign Up", path: "/signup" },
+        ]}
+      />
       <RootContainer>
         <FormContainer onSubmit={logindetails}>
           <Typography variant="h5" gutterBottom>
