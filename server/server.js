@@ -32,7 +32,7 @@ async function connectDB() {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 30000,
     });
-    console.log("Connected to mongoDB");
+    //console.log("Connected to mongoDB");
   } catch (error) {
     console.error("Error connecting to MongoDB", error);
   }
@@ -40,13 +40,19 @@ async function connectDB() {
 
 connectDB();
 
+function logger(req, res, next) {
+  console.log(`Method name :${req.method}, URL: ${req.url}, request: ${req} `);
+  next();
+}
+app.use(logger);
+
 app.get("/", (req, res) => {
   const userId = uuidv4();
   res.end(`Hi welcome ${userId}`);
 });
 
 app.post("/userregister", async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   try {
     const phoneNumberExist = await userRegisterFoodPage.findOne({
       phoneNumber: req.body.phoneNumber,
@@ -71,7 +77,7 @@ app.post("/userregister", async (req, res) => {
     req.body.password = hashPassword;
 
     const newUserRegister = await userRegisterFoodPage.create(req.body);
-    console.log(newUserRegister);
+    //console.log(newUserRegister);
     if (req.body.type === "Seller") {
       const addHotelDetails = await hotelDetailsSchema.create({
         hotelName: req.body.name,
@@ -116,10 +122,10 @@ app.post("/login", async (req, res) => {
 
 app.get("/userdetails/:id", async (req, res) => {
   try {
-    console.log(req.params);
+    //console.log(req.params);
     const { id } = req.params;
     const userName = await userRegisterFoodPage.findById(id);
-    console.log(userName);
+    //console.log(userName);
     res.status(200).send(userName.name);
   } catch (error) {
     res.status(500).send(error);
@@ -149,7 +155,7 @@ app.get("/gkd", async (req, res) => {
 
 app.put("/passwordupdate", async (req, res) => {
   const { phoneNumber, password } = req.body;
-  console.log(req.body);
+  //console.log(req.body);
   try {
     const updationPassword = await userRegisterFoodPage.findOneAndUpdate(
       { phoneNumber: phoneNumber },
@@ -164,22 +170,22 @@ app.put("/passwordupdate", async (req, res) => {
 
 app.post("/hoteldetails", async (req, res) => {
   try {
-    console.log("1");
+    //console.log("1");
 
     const { hotelId, hotelItems } = req.body;
-    console.log(`${hotelId}`);
+    //console.log(`${hotelId}`);
     const hotel = await hotelDetailsSchema.findOne({ hotelId });
-    console.log(hotel);
-    console.log("2");
+    //console.log(hotel);
+    //console.log("2");
     if (hotel) {
-      console.log("3");
+      //console.log("3");
       const existingItems = hotel.hotelItems.map((item) => item.itemName);
       const duplicateItems = hotelItems.filter((item) =>
         existingItems.includes(item.itemName)
       );
-      console.log("4");
+      //console.log("4");
       if (duplicateItems.length > 0) {
-        console.log("5");
+        //console.log("5");
         return res
           .status(500)
           .send(
@@ -187,18 +193,18 @@ app.post("/hoteldetails", async (req, res) => {
               duplicateItems.map((item) => item.itemName).join(", ")
           );
       }
-      console.log("6");
+      //console.log("6");
       hotel.hotelItems.push(...hotelItems);
       await hotel.save();
       return res.status(200).send("Items appended successfully");
     } else {
-      console.log("7");
-      console.log(`body - ${JSON.stringify(req.body)}`);
+      //console.log("7");
+      //console.log(`body - ${JSON.stringify(req.body)}`);
       const addHotelDetails = await hotelDetailsSchema.create({
         hotelName: hotelName,
         hotelItems: hotelItems,
       });
-      console.log(addHotelDetails);
+      //console.log(addHotelDetails);
       return res.status(201).send("details added successfully");
     }
   } catch (error) {
@@ -242,7 +248,7 @@ app.get("/item/:name", async (req, res) => {
   try {
     const hotelName = req.params.name;
     const userName = await userRegisterFoodPage.findById({ _id: hotelName });
-    console.log(userName);
+    //console.log(userName);
     const items = await hotelDetailsSchema.findOne({
       hotelName: userName.name,
     });
@@ -280,7 +286,7 @@ app.put("/item/:hotelId/:itemId", async (req, res) => {
 app.post("/addcart", async (req, res) => {
   try {
     const { hotelId, userId, itemId } = req.body;
-    console.log(`${hotelId} - ${userId} + ${itemId}`);
+    //console.log(`${hotelId} - ${userId} + ${itemId}`);
     const hotel = await hotelDetailsSchema.findById(hotelId);
     const user = await userRegisterFoodPage.findById(userId);
     const item = await hotel.hotelItems.id(itemId);
@@ -365,9 +371,9 @@ app.post("/replacecart", async (req, res) => {
     const user = await userRegisterFoodPage.findById(userId);
     const item = await hotel.hotelItems.id(itemId);
     const removeExist = await cartSchema.deleteOne({ userId: userId });
-    console.log({ removeExist });
-    console.log(req.body);
-    console.log({ item });
+    //console.log({ removeExist });
+    //console.log(req.body);
+    //console.log({ item });
 
     const cart = [
       {
@@ -385,7 +391,7 @@ app.post("/replacecart", async (req, res) => {
     const addCart = await cartSchema.create(cart);
     res.status(200).send("Item added");
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     res.status(500).send(err);
   }
 });
@@ -481,7 +487,7 @@ app.get("/hotelname/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const userName = await hotelDetailsSchema.findOne({ hotelId: id });
-    console.log(userName.user);
+    //console.log(userName.user);
     res.status(200).send({ user: userName.hotelName });
   } catch (error) {
     res.status(500).send(error);
